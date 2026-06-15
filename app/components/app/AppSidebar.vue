@@ -58,7 +58,7 @@ watch(user, loadMyCompany)
     <div class="flex flex-col h-full justify-between">
       <div>
         <div class="mb-6">
-          <h1 class="text-2xl font-bold text-white">Название</h1>
+          <h1 class="text-2xl font-bold text-white">Путешествия</h1>
         </div>
 
         <nav class="space-y-4 overflow-y-auto pr-1">
