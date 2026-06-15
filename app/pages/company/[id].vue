@@ -41,6 +41,7 @@ const notFound = ref(false)
 const activePlace = ref<string>('')
 const placePosts = ref<PostItem[]>([])
 const loadingPosts = ref(false)
+const direction = ref<'slide-left' | 'slide-right'>('slide-right')
 
 const isOwner = computed(() => company.value?.owner?.id === user.value?.id)
 
@@ -74,6 +75,11 @@ async function loadPosts(place: string) {
 }
 
 function setPlace(place: string) {
+  if (place === activePlace.value || !company.value) return
+  const places = company.value.places
+  const fromIdx = places.indexOf(activePlace.value)
+  const toIdx = places.indexOf(place)
+  direction.value = toIdx > fromIdx ? 'slide-left' : 'slide-right'
   activePlace.value = place
 }
 
@@ -157,7 +163,7 @@ watch(activePlace, (p) => loadPosts(p))
               v-for="p in company.places"
               :key="p"
               class="px-4 py-2 rounded-xl text-sm transition"
-              :class="activePlace === p ? 'bg-white text-black font-semibold' : 'bg-[#0b0b0b] border border-white/10 text-gray-300 hover:bg-white/5'"
+              :class="activePlace === p ? 'bg-white text-black font-semibold scale-[1.02]' : 'bg-[#0b0b0b] border border-white/10 text-gray-300 hover:bg-white/5'"
               @click="setPlace(p)"
             >{{ p }}</button>
           </div>
@@ -168,32 +174,34 @@ watch(activePlace, (p) => loadPosts(p))
             </NuxtLink>
           </div>
 
-          <ProfilePostsSkeleton v-if="loadingPosts" />
-          <div v-else-if="!placePosts.length" class="text-sm text-gray-500 text-center py-8">
-            Пока нет постов в этом месте
-          </div>
-          <div v-else class="columns-2 sm:columns-3 md:columns-4 gap-3">
-            <div v-for="p in placePosts" :key="p.id" class="mb-3 break-inside-avoid">
-              <div class="group relative overflow-hidden rounded-2xl bg-gray-900">
-                <img :src="p.src" loading="lazy" class="w-full h-auto object-cover" />
-                <div class="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/80 to-transparent">
-                  <div class="flex items-center gap-2">
-                    <UserLink :username="p.author.username" :text="p.author.name" class="text-xs text-gray-200 truncate flex-1" />
-                    <StarsDisplay :value="p.rate" size="xs" />
+          <Transition :name="direction" mode="out-in">
+            <ProfilePostsSkeleton v-if="loadingPosts" key="loading" />
+            <div v-else-if="!placePosts.length" key="empty" class="text-sm text-gray-500 text-center py-8">
+              Пока нет постов в этом месте
+            </div>
+            <div v-else :key="activePlace" class="columns-2 sm:columns-3 md:columns-4 gap-3">
+              <div v-for="p in placePosts" :key="p.id" class="mb-3 break-inside-avoid">
+                <div class="group relative overflow-hidden rounded-2xl bg-gray-900">
+                  <img :src="p.src" loading="lazy" class="w-full h-auto object-cover" />
+                  <div class="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/80 to-transparent">
+                    <div class="flex items-center gap-2">
+                      <UserLink :username="p.author.username" :text="p.author.name" class="text-xs text-gray-200 truncate flex-1" />
+                      <StarsDisplay :value="p.rate" size="xs" />
+                    </div>
+                    <button
+                      type="button"
+                      class="mt-1 inline-flex items-center gap-1 text-xs"
+                      :class="p.liked ? 'text-red-400' : 'text-white hover:text-red-300'"
+                      @click="toggleLike(p)"
+                    >
+                      <UIcon :name="p.liked ? 'i-ion-heart' : 'i-ion-heart-outline'" />
+                      <span>{{ p.likesCount }}</span>
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    class="mt-1 inline-flex items-center gap-1 text-xs"
-                    :class="p.liked ? 'text-red-400' : 'text-white hover:text-red-300'"
-                    @click="toggleLike(p)"
-                  >
-                    <UIcon :name="p.liked ? 'i-ion-heart' : 'i-ion-heart-outline'" />
-                    <span>{{ p.likesCount }}</span>
-                  </button>
                 </div>
               </div>
             </div>
-          </div>
+          </Transition>
         </template>
       </div>
     </div>

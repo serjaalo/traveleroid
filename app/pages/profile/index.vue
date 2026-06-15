@@ -159,7 +159,7 @@ onMounted(loadProfile)
               </div>
             </div>
 
-            <div>
+            <div class="min-h-[80vh] lg:min-h-0">
               <Transition :name="direction" mode="out-in">
                 <div :key="activeTab" class="p-0">
                   <template v-if="activeTab === 'posts'">
@@ -182,31 +182,4 @@ onMounted(loadProfile)
   </div>
 </template>
 
-<style>
-.slide-left-enter-active,
-.slide-left-leave-active,
-.slide-right-enter-active,
-.slide-right-leave-active {
-  transition: all 0.25s ease;
-}
 
-.slide-left-enter-from {
-  opacity: 0;
-  transform: translateX(50px);
-}
-
-.slide-left-leave-to {
-  opacity: 0;
-  transform: translateX(-50px);
-}
-
-.slide-right-enter-from {
-  opacity: 0;
-  transform: translateX(-50px);
-}
-
-.slide-right-leave-to {
-  opacity: 0;
-  transform: translateX(50px);
-}
-</style>

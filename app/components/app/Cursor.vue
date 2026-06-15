@@ -32,4 +32,11 @@ onMounted(() => {
     transparent 55%
   );
 }
+
+/* Hide glow on touch devices (mobile / tablet) — there is no real cursor there */
+@media (hover: none), (pointer: coarse) {
+  .cursor-glow {
+    display: none;
+  }
+}
 </style>

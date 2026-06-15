@@ -71,12 +71,12 @@ async function toggleLike(e: MouseEvent) {
     <button
       v-if="photo.id !== undefined"
       type="button"
-      class="absolute top-2 right-2 z-10 flex items-center gap-1 px-2 py-1 rounded-full bg-black/50 backdrop-blur text-white text-xs transition opacity-0 group-hover:opacity-100"
-      :class="liked ? 'text-red-400' : 'hover:text-red-300'"
+      class="absolute top-2 right-2 z-10 flex items-center gap-1 px-2 py-1 rounded-full bg-black/50 backdrop-blur text-white text-xs transition-all duration-200 opacity-0 group-hover:opacity-100 active:scale-90"
+      :class="liked ? 'text-red-400 scale-110' : 'hover:text-red-300'"
       :disabled="likeBusy"
       @click="toggleLike"
     >
-      <UIcon :name="liked ? 'i-ion-heart' : 'i-ion-heart-outline'" class="text-base" />
+      <UIcon :name="liked ? 'i-ion-heart' : 'i-ion-heart-outline'" class="text-base transition-transform duration-200" :class="liked ? 'scale-110' : ''" />
       <span>{{ likesCount }}</span>
     </button>
 

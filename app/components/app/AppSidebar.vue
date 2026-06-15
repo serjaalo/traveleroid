@@ -66,7 +66,7 @@ watch(user, loadMyCompany)
             v-for="link in navLinks"
             :key="link.to"
             :to="link.to"
-            class="flex items-center gap-3 px-4 py-3 rounded-lg transition text-gray-400 hover:text-white hover:bg-gray-800/50"
+            class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors duration-200 text-gray-400 hover:text-white hover:bg-gray-800/50"
             active-class="text-white"
           >
             <UIcon :name="link.icon" class="text-xl flex-shrink-0" />
@@ -79,14 +79,14 @@ watch(user, loadMyCompany)
         <NuxtLink
           v-if="myCompany"
           :to="`/company/${myCompany.id}`"
-          class="flex items-center gap-3 px-4 py-3 rounded-lg transition text-gray-300 hover:text-white hover:bg-gray-800/50"
+          class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-gray-300 hover:text-white hover:bg-gray-800/50"
         >
           <img :src="myCompany.avatar || '/img.jpg'" class="w-6 h-6 rounded-md object-cover flex-shrink-0" />
           <span class="text-sm font-medium truncate">Компания</span>
         </NuxtLink>
         <button
           v-else
-          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition text-gray-300 hover:text-white hover:bg-gray-800/50"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-gray-300 hover:text-white hover:bg-gray-800/50"
           @click="showClaim = true"
         >
           <UIcon name="i-ion-key" class="text-xl" />
@@ -95,7 +95,7 @@ watch(user, loadMyCompany)
 
         <button
           @click="logout"
-          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition text-gray-300 hover:text-red-400 hover:bg-gray-800/50"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-gray-300 hover:text-red-400 hover:bg-gray-800/50"
         >
           <UIcon name="i-ion-log-out" class="text-xl" />
           <span class="text-sm font-medium">Выйти</span>
@@ -122,7 +122,7 @@ watch(user, loadMyCompany)
         v-for="link in navLinks"
         :key="link.to"
         :to="link.to"
-        class="flex flex-col items-center justify-center py-2 px-1 rounded-xl text-xs transition text-gray-400 hover:text-white"
+        class="flex flex-col items-center justify-center py-2 px-1 rounded-xl text-xs transition-all duration-200 text-gray-400 hover:text-white active:scale-95"
         active-class="text-blue-400"
       >
         <UIcon :name="link.icon" class="text-2xl mb-0.5" />
@@ -133,40 +133,49 @@ watch(user, loadMyCompany)
 
   <!-- Claim modal -->
   <Teleport to="body">
-    <div
-      v-if="showClaim"
-      class="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:px-4 bg-black/70 backdrop-blur"
-      @click.self="showClaim = false"
-    >
-      <div class="w-full max-w-md bg-[#0b0b0b] border border-white/10 rounded-t-2xl sm:rounded-2xl p-4 sm:p-6 shadow-2xl max-h-[95vh] overflow-y-auto">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-base sm:text-lg font-semibold text-white">Привязать компанию</h3>
-          <button class="text-gray-400 hover:text-white p-1" @click="showClaim = false">
-            <UIcon name="i-ion-close" class="text-xl" />
-          </button>
-        </div>
-        <p class="text-sm text-gray-400 mb-3">Введите ключ, выданный администратором.</p>
-        <input
-          v-model="claimKey"
-          placeholder="XXXXXXXXXXXXXXXX"
-          class="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-white placeholder-gray-600 focus:outline-none focus:border-white/30 transition text-sm uppercase tracking-widest"
-          @keyup.enter="submitClaim"
-        />
-        <p v-if="claimError" class="text-sm text-red-400 mt-2">{{ claimError }}</p>
-        <div class="mt-4 flex gap-2 justify-end">
-          <button
-            class="px-4 py-2 rounded-xl text-sm bg-white/5 hover:bg-white/10 text-white"
-            @click="showClaim = false"
-          >Отмена</button>
-          <button
-            :disabled="claimBusy || !claimKey.trim()"
-            class="px-4 py-2 rounded-xl text-sm font-semibold bg-white text-black hover:bg-gray-200 disabled:opacity-50"
-            @click="submitClaim"
+    <Transition name="fade">
+      <div
+        v-if="showClaim"
+        class="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:px-4 bg-black/70 backdrop-blur"
+        @click.self="showClaim = false"
+      >
+        <Transition name="slide-up" appear>
+          <div
+            v-if="showClaim"
+            class="w-full max-w-md bg-[#0b0b0b] border border-white/10 rounded-t-2xl sm:rounded-2xl p-4 sm:p-6 shadow-2xl max-h-[95vh] overflow-y-auto"
           >
-            {{ claimBusy ? 'Привязка...' : 'Привязать' }}
-          </button>
-        </div>
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-base sm:text-lg font-semibold text-white">Привязать компанию</h3>
+              <button class="text-gray-400 hover:text-white p-1 transition active:scale-90" @click="showClaim = false">
+                <UIcon name="i-ion-close" class="text-xl" />
+              </button>
+            </div>
+            <p class="text-sm text-gray-400 mb-3">Введите ключ, выданный администратором.</p>
+            <input
+              v-model="claimKey"
+              placeholder="XXXXXXXXXXXXXXXX"
+              class="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-white placeholder-gray-600 focus:outline-none focus:border-white/30 transition text-sm uppercase tracking-widest"
+              @keyup.enter="submitClaim"
+            />
+            <Transition name="fade">
+              <p v-if="claimError" class="text-sm text-red-400 mt-2">{{ claimError }}</p>
+            </Transition>
+            <div class="mt-4 flex gap-2 justify-end">
+              <button
+                class="px-4 py-2 rounded-xl text-sm bg-white/5 hover:bg-white/10 text-white transition active:scale-95"
+                @click="showClaim = false"
+              >Отмена</button>
+              <button
+                :disabled="claimBusy || !claimKey.trim()"
+                class="px-4 py-2 rounded-xl text-sm font-semibold bg-white text-black hover:bg-gray-200 disabled:opacity-50 transition active:scale-95"
+                @click="submitClaim"
+              >
+                {{ claimBusy ? 'Привязка...' : 'Привязать' }}
+              </button>
+            </div>
+          </div>
+        </Transition>
       </div>
-    </div>
+    </Transition>
   </Teleport>
 </template>

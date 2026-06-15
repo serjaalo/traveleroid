@@ -77,7 +77,11 @@ const postsCount = computed(() => aggregate.value?.postsCount ?? slides.value.le
 const avgRating = computed(() => (aggregate.value?.avgRating ?? 0).toFixed(1))
 const uniqueAuthors = computed(() => aggregate.value?.uniqueAuthors ?? new Set(slides.value.map(p => p.author?.id)).size)
 
-const carouselItems = computed(() => slides.value.map(p => ({ ...p, class: 'px-2 basis-1/1 sm:basis-1/2 md:basis-1/3 lg:basis-1/3' })))
+// Pass live references (not copies) so likes update reactively in the carousel
+const carouselItems = computed(() => slides.value.map(p => {
+  ;(p as PostItem & { class?: string }).class = 'px-2 basis-1/1 sm:basis-1/2 md:basis-1/3 lg:basis-1/3'
+  return p
+}))
 
 useSeoMeta({
   title: computed(() => `${placeData.value?.place ?? 'Местоположение'} — TravelApp`),
@@ -104,14 +108,16 @@ function openChat() {
 
 async function toggleLike(post: PostItem) {
   if (!loggedIn.value) return
-  const next = !post.liked
+  const target = slides.value.find(p => p.id === post.id)
+  if (!target) return
+  const next = !target.liked
   try {
     const result = await $fetch<{ liked: boolean; likesCount: number }>(
-      `/api/posts/${post.id}/like`,
+      `/api/posts/${target.id}/like`,
       { method: next ? 'POST' : 'DELETE' }
     )
-    post.liked = result.liked
-    post.likesCount = result.likesCount
+    target.liked = result.liked
+    target.likesCount = result.likesCount
   } catch (e) {
     console.error('like err', e)
   }

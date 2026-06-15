@@ -182,29 +182,35 @@ watch(
       </div>
 
       <!-- Mobile: list or window -->
-      <div class="md:hidden h-full">
-        <template v-if="!selectedId">
-          <ChatListSkeleton v-if="pendingChats" />
-          <div v-else-if="!chats.length" class="text-center text-gray-400 py-8 text-sm">
-            У вас пока нет чатов
+      <div class="md:hidden h-full relative">
+        <Transition :name="selectedId ? 'slide-left' : 'slide-right'" mode="out-in">
+          <div :key="selectedId ? 'window' : 'list'" class="h-full">
+            <template v-if="!selectedId">
+              <ChatListSkeleton v-if="pendingChats" />
+              <div v-else-if="!chats.length" class="text-center text-gray-400 py-8 text-sm">
+                У вас пока нет чатов
+              </div>
+              <ChatList v-else :chats="chats" @select="onSelect" />
+            </template>
+            <template v-else>
+              <div v-if="pendingMessages" class="h-full bg-[#0b0b0b] rounded-2xl border border-white/10">
+                <ChatMessagesSkeleton />
+              </div>
+              <ChatWindow v-else :chat="selectedChat" :currentUser="currentUser" mobile @back="onBack" @send="onSend" @send-image="onSendImage" />
+            </template>
           </div>
-          <ChatList v-else :chats="chats" @select="onSelect" />
-        </template>
-        <template v-else>
-          <div v-if="pendingMessages" class="h-full bg-[#0b0b0b] rounded-2xl border border-white/10">
-            <ChatMessagesSkeleton />
-          </div>
-          <ChatWindow v-else :chat="selectedChat" :currentUser="currentUser" mobile @back="onBack" @send="onSend" @send-image="onSendImage" />
-        </template>
+        </Transition>
       </div>
 
       <!-- Desktop: window -->
       <div class="hidden md:block h-full overflow-y-auto">
-        <div v-if="pendingMessages && selectedId" class="h-full bg-[#0b0b0b] rounded-2xl border border-white/10">
-          <ChatMessagesSkeleton />
-        </div>
-        <ChatWindow v-else-if="selectedChat" :chat="selectedChat" :currentUser="currentUser" @send="onSend" @send-image="onSendImage" />
-        <div v-else class="h-full bg-[#0b0b0b] rounded-2xl border border-white/10 flex items-center justify-center text-white">Выберите чат</div>
+        <Transition name="fade" mode="out-in">
+          <div v-if="pendingMessages && selectedId" key="loading" class="h-full bg-[#0b0b0b] rounded-2xl border border-white/10">
+            <ChatMessagesSkeleton />
+          </div>
+          <ChatWindow v-else-if="selectedChat" :key="selectedChat.id" :chat="selectedChat" :currentUser="currentUser" @send="onSend" @send-image="onSendImage" />
+          <div v-else key="empty" class="h-full bg-[#0b0b0b] rounded-2xl border border-white/10 flex items-center justify-center text-white">Выберите чат</div>
+        </Transition>
       </div>
     </div>
   </div>

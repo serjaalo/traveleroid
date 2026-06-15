@@ -303,21 +303,22 @@ onMounted(checkSession)
               </div>
             </div>
 
+            <Transition name="slide-up">
             <div v-if="expandedId === c.id" class="mt-4 pt-4 border-t border-white/10 space-y-4">
               <!-- Places -->
               <div>
                 <p class="text-sm font-semibold mb-2">Привязанные места</p>
                 <div v-if="!c.places.length" class="text-sm text-gray-500 mb-2">Мест пока нет</div>
-                <div v-else class="flex flex-wrap gap-2 mb-2">
+                <TransitionGroup name="fade" tag="div" class="flex flex-wrap gap-2 mb-2" v-else>
                   <span
                     v-for="p in c.places"
                     :key="p"
                     class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-sm"
                   >
                     {{ p }}
-                    <button class="text-red-300 hover:text-red-200 ml-1" @click="removePlace(c.id, p)">×</button>
+                    <button class="text-red-300 hover:text-red-200 ml-1 transition active:scale-90" @click="removePlace(c.id, p)">×</button>
                   </span>
-                </div>
+                </TransitionGroup>
                 <div class="flex gap-2">
                   <input
                     v-model="placeInputs[c.id]"
@@ -339,7 +340,7 @@ onMounted(checkSession)
                   >+ Сгенерировать ключ</button>
                 </div>
                 <div v-if="!(keysMap[c.id]?.length)" class="text-sm text-gray-500 py-2">Ключей пока нет</div>
-                <div v-else class="space-y-2">
+                <TransitionGroup name="fade" tag="div" class="space-y-2" v-else>
                   <div
                     v-for="k in keysMap[c.id]"
                     :key="k.key"
@@ -348,12 +349,13 @@ onMounted(checkSession)
                     <code class="text-amber-300 text-xs sm:text-sm flex-1 min-w-0 break-all">{{ k.key }}</code>
                     <span v-if="k.used" class="text-xs text-gray-500">использован</span>
                     <span v-else class="text-xs text-emerald-300">активен</span>
-                    <button type="button" class="text-xs text-gray-300 hover:text-white" @click="copyKey(k.key)">Копировать</button>
-                    <button type="button" class="text-xs text-red-300 hover:text-red-200" @click="deleteKey(c.id, k.key)">Удалить</button>
+                    <button type="button" class="text-xs text-gray-300 hover:text-white transition active:scale-95" @click="copyKey(k.key)">Копировать</button>
+                    <button type="button" class="text-xs text-red-300 hover:text-red-200 transition active:scale-95" @click="deleteKey(c.id, k.key)">Удалить</button>
                   </div>
-                </div>
+                </TransitionGroup>
               </div>
             </div>
+            </Transition>
           </div>
         </div>
       </section>

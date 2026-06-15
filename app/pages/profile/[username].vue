@@ -194,7 +194,7 @@ onMounted(async () => {
             </div>
           </div>
 
-          <div>
+          <div class="min-h-[80vh] lg:min-h-0">
             <Transition :name="direction" mode="out-in">
               <div :key="activeTab" class="p-0">
                 <template v-if="activeTab === 'posts'">
