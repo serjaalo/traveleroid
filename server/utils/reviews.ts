@@ -47,3 +47,15 @@ export async function listReviewsByPlace(place: string): Promise<ReviewRecord[]>
 export async function countReviewsByAuthor(authorId: string): Promise<number> {
   return (await listReviewsByAuthor(authorId)).length
 }
+
+export async function deleteReviewsByPostId(postId: string): Promise<number> {
+  const all = await listAllReviews()
+  let removed = 0
+  for (const r of all) {
+    if (r.postId === postId) {
+      await deleteReview(r.id)
+      removed += 1
+    }
+  }
+  return removed
+}

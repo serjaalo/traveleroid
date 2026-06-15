@@ -173,22 +173,22 @@ async function toggleLike(post: PostItem) {
           >
             <template #default="{ item }">
               <div class="p-2">
-                <div v-if="item.review" class=" bg-[#0b0b0b] p-3 rounded-2xl rounded-b-none border border-b-0 border-white/10">
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                      <img :src="item.author.avatar" alt="" class="w-8 h-8 rounded-full object-cover" />
-                      <div>
+                <div class="bg-[#0b0b0b] p-3 rounded-2xl rounded-b-none border border-b-0 border-white/10">
+                  <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <img :src="item.author.avatar" alt="" class="w-8 h-8 rounded-full object-cover shrink-0" />
+                      <div class="min-w-0">
                         <UserLink
                           :username="item.author.username"
                           :text="item.author.name"
-                          class="text-sm font-medium text-white block"
+                          class="text-sm font-medium text-white block truncate"
                         />
-                        <p class="text-xs text-gray-500">{{ item.title }}</p>
+                        <p class="text-xs text-gray-500 truncate">{{ item.title }}</p>
                       </div>
                     </div>
                     <StarsDisplay :value="item.rate" size="sm" />
                   </div>
-                  <p class="mt-2 text-sm text-gray-300">{{ item.review }}</p>
+                  <p v-if="item.review" class="mt-2 text-sm text-gray-300">{{ item.review }}</p>
                 </div>
                 <div class="relative">
                   <img :src="item.src" :alt="item.title" loading="lazy" class="w-full max-h-95 rounded-2xl rounded-t-none border border-t-0 border-white/10 object-cover" />

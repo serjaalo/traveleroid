@@ -1,96 +1,127 @@
 <script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
+
 const props = defineProps<{ modelValue: string }>()
 const emit = defineEmits<{ (e: 'update:modelValue', value: string): void }>()
 
-const popularLocations = [
-  'Ленские столбы, Якутия',
-  'Тукуланы, Якутия',
-  'Булуус, Якутия',
-  'Кисиляхи, Якутия',
-  'Оймякон, Якутия',
-  'Верхоянск, Якутия',
-  'Озеро Лабынкыр, Якутия',
-  'Момские горы, Якутия',
-  'Хребет Черского, Якутия',
-  'Долина Смерти, Якутия',
-  'Национальный парк Ленские столбы, Якутия',
-  'Усть-Ленский заповедник, Якутия',
-  'Олекминский заповедник, Якутия',
-  'Момский природный парк, Якутия',
-  'Ресурсный резерват Кыталык, Якутия',
-  'Дельта Лены, Якутия',
-  'Река Лена, Якутия',
-  'Река Индигирка, Якутия',
-  'Река Колыма, Якутия',
-  'Озеро Ниджили, Якутия',
-  'Озеро Моготоево, Якутия',
-  'Синские столбы, Якутия',
-  'Буотама, Якутия',
-  'Пески Тукулан Кысыл Элэсин, Якутия',
-  'Ледник Булуус, Якутия',
-  'Гора Победа, Якутия',
-  'Мус-Хая, Якутия',
-  'Мраморная гора, Якутия',
-  'Батагайский провал, Якутия',
-  'Сунтар-Хаята, Якутия',
-  'Озеро Улахан-Кюель, Якутия',
-  'Остров Столб, Якутия',
-  'Новый Кисилях, Якутия',
-  'Кигиляхи Верхоянья, Якутия',
-  'Томтор, Якутия',
-  'Полюс холода, Якутия',
-  'Ус Хатын, Якутия',
-  'Чочур Муран, Якутия',
-  'Царство вечной мерзлоты, Якутия',
-  'Музей мамонта, Якутия',
-  'Сокровищница Якутии, Якутия',
-  'Старый город Якутска, Якутия',
-  'Зоопарк Орто-Дойду, Якутия',
-  'Национальный художественный музей Республики Саха, Якутия',
-  'Парк культуры и отдыха Якутска, Якутия',
-  'Священная гора Эбэ-Хая, Якутия',
-  'Олекминские столбы, Якутия',
-  'Национальный парк Усть-Вилюйский, Якутия',
-  'Жиганские скалы, Якутия',
-  'Арктический побережье моря Лаптевых, Якутия',
-  'Новосибирские острова, Якутия',
-  'Остров Большой Ляховский, Якутия',
-  'Остров Котельный, Якутия',
-  'Остров Фаддеевский, Якутия',
-  'Анабарское плато, Якутия',
-  'Хараулахские горы, Якутия',
-  'Алданское нагорье, Якутия',
-  'Вилюйское водохранилище, Якутия',
-  'Вилюйские ГЭС, Якутия',
-  'Улахан-Тарын, Якутия',
-  'Бэрт-Ус, Якутия',
-  'Синские щеки, Якутия',
-  'Курулуурский водопад, Якутия',
-  'Водопады реки Менда, Якутия',
-  'Озеро Чабыда, Якутия',
-  'Этнографический комплекс Дружба, Якутия',
-  'Ысыах Туймаады, Якутия',
-  'Местность Ус Хатын, Якутия'
-]
+const places = ref<string[]>([])
+const loading = ref(true)
+const loadError = ref('')
+const query = ref('')
+const open = ref(false)
+const rootRef = ref<HTMLElement | null>(null)
+
+async function loadPlaces() {
+  loading.value = true
+  loadError.value = ''
+  try {
+    const data = await $fetch<string[]>('/api/companies/places')
+    places.value = data
+  } catch {
+    loadError.value = 'Не удалось загрузить список мест'
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  loadPlaces()
+  document.addEventListener('click', onDocClick)
+})
+
+function onDocClick(e: MouseEvent) {
+  const t = e.target as Node
+  if (rootRef.value && !rootRef.value.contains(t)) {
+    open.value = false
+  }
+}
+
+const filtered = computed(() => {
+  const q = query.value.trim().toLowerCase()
+  if (!q) return places.value
+  return places.value.filter(p => p.toLowerCase().includes(q))
+})
+
+function pick(p: string) {
+  emit('update:modelValue', p)
+  query.value = p
+  open.value = false
+}
+
+function clear() {
+  emit('update:modelValue', '')
+  query.value = ''
+  open.value = true
+}
+
+// Sync query with external value (e.g. when reset from outside)
+watch(
+  () => props.modelValue,
+  (v) => {
+    if (v !== query.value) query.value = v
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
-  <div class="space-y-2">
+  <div ref="rootRef" class="space-y-2 relative">
     <label class="text-sm font-medium text-gray-300">Местоположение</label>
 
     <div class="relative">
       <UIcon name="i-ion-location" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
       <input
-        :value="modelValue"
-        @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
+        :value="query"
+        @input="query = ($event.target as HTMLInputElement).value; open = true"
+        @focus="open = true"
         type="text"
-        placeholder="Введите место или выберите из списка..."
-        class="w-full bg-[#0b0b0b] border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition"
-        list="locations-list"
+        :placeholder="loading ? 'Загрузка списка мест...' : 'Выберите место из списка...'"
+        class="w-full bg-[#0b0b0b] border border-white/10 rounded-xl py-3 pl-10 pr-10 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition"
+        :disabled="loading"
+        autocomplete="off"
       />
-      <datalist id="locations-list">
-        <option v-for="loc in popularLocations" :key="loc" :value="loc" />
-      </datalist>
+      <button
+        v-if="query"
+        type="button"
+        class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition"
+        @click="clear"
+        aria-label="Очистить"
+      >
+        <UIcon name="i-ion-close" class="text-base" />
+      </button>
     </div>
+
+    <p v-if="loadError" class="text-xs text-red-400">{{ loadError }}</p>
+
+    <Transition name="fade">
+      <div
+        v-if="open && !loading"
+        class="absolute z-20 left-0 right-0 mt-1 bg-[#0b0b0b] border border-white/10 rounded-xl shadow-2xl max-h-64 overflow-y-auto"
+      >
+        <div v-if="!places.length" class="text-xs text-gray-400 px-3 py-3 text-center">
+          Пока нет доступных мест. Свяжитесь с администратором.
+        </div>
+        <div v-else-if="!filtered.length" class="text-xs text-gray-400 px-3 py-3 text-center">
+          Ничего не найдено
+        </div>
+        <button
+          v-for="p in filtered"
+          :key="p"
+          type="button"
+          class="w-full text-left px-3 py-2.5 text-sm transition-colors hover:bg-white/5"
+          :class="props.modelValue === p ? 'bg-white/10 text-white' : 'text-gray-200'"
+          @click="pick(p)"
+        >
+          <span class="flex items-center gap-2">
+            <UIcon name="i-ion-location" class="text-gray-500 shrink-0" />
+            <span class="truncate">{{ p }}</span>
+          </span>
+        </button>
+      </div>
+    </Transition>
+
+    <p v-if="!loading && query && !places.includes(query)" class="text-xs text-amber-400">
+      Можно выбрать только место из списка
+    </p>
   </div>
 </template>

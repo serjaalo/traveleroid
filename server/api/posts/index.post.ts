@@ -3,6 +3,7 @@ import { saveImageBuffer, readImageSize } from '../../utils/uploads'
 import { createPost } from '../../utils/posts'
 import { toPostDto } from '../../utils/postDto'
 import { createReview } from '../../utils/reviews'
+import { listAllowedPlaces } from '../../utils/companies'
 
 export default defineEventHandler(async (event) => {
   const session = await requireUserSession(event)
@@ -35,6 +36,11 @@ export default defineEventHandler(async (event) => {
   if (!place) {
     throw createError({ statusCode: 400, statusMessage: 'Place is required' })
   }
+  // Restrict places to those configured by admin via companies
+  const allowed = await listAllowedPlaces()
+  if (!allowed.includes(place)) {
+    throw createError({ statusCode: 400, statusMessage: 'Выбрано недопустимое место. Выберите место из списка.' })
+  }
   const rating = Number(fields.rating)
   if (!Number.isFinite(rating) || rating < 0 || rating > 5) {
     throw createError({ statusCode: 400, statusMessage: 'Rating must be 0..5' })
@@ -64,6 +70,7 @@ export default defineEventHandler(async (event) => {
   if (review.trim() && rating >= 1) {
     await createReview({
       authorId: userId,
+      postId: post.id,
       place,
       text: review.trim(),
       rating: Math.round(rating)

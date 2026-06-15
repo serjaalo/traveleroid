@@ -33,6 +33,19 @@ export async function listCompanies(): Promise<CompanyRecord[]> {
   return items
 }
 
+/**
+ * Returns flat list of all places attached to any company (deduplicated, sorted).
+ * Used to restrict which places users can pick when creating a post.
+ */
+export async function listAllowedPlaces(): Promise<string[]> {
+  const companies = await listCompanies()
+  const set = new Set<string>()
+  for (const c of companies) {
+    for (const p of c.places) set.add(p)
+  }
+  return Array.from(set).sort((a, b) => a.localeCompare(b, 'ru'))
+}
+
 function normalize(c: CompanyRecord & { place?: string }): CompanyRecord {
   // Backward compat: legacy records with `place` instead of `places`
   if (!Array.isArray(c.places)) {

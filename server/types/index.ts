@@ -43,6 +43,7 @@ export interface PostRecord {
 export interface ReviewRecord {
   id: string
   authorId: string
+  postId?: string // optional link to source post (so we can cascade-delete)
   place: string
   text: string
   rating: number

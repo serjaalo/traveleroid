@@ -1,4 +1,5 @@
 import { deletePost, getPost } from '../../utils/posts'
+import { deleteReviewsByPostId } from '../../utils/reviews'
 
 export default defineEventHandler(async (event) => {
   const session = await requireUserSession(event)
@@ -13,5 +14,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 403, statusMessage: 'Forbidden' })
   }
   await deletePost(id)
+  // Cascade-delete linked review record (if any)
+  await deleteReviewsByPostId(id)
   return { ok: true }
 })
