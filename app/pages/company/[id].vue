@@ -103,11 +103,12 @@ watch(activePlace, (p) => loadPosts(p))
 </script>
 
 <template>
-  <div class="h-full min-h-0 flex flex-col pb-28 lg:pb-0">
-    <header class="mb-6 flex items-center justify-between">
-      <h1 class="text-3xl font-bold text-white">Компания</h1>
-      <button @click="router.back()" class="text-sm text-gray-300 hover:text-white flex items-center gap-2">
-        <UIcon name="i-ion-arrow-back" class="size-4" /> Назад
+  <div class="h-full min-h-0 flex flex-col pb-24 lg:pb-0">
+    <header class="mb-4 sm:mb-6 flex items-center justify-between gap-3">
+      <h1 class="text-2xl sm:text-3xl font-bold text-white">Компания</h1>
+      <button @click="router.back()" class="shrink-0 text-sm text-gray-300 hover:text-white flex items-center gap-2">
+        <UIcon name="i-ion-arrow-back" class="size-4" />
+        <span class="hidden sm:inline">Назад</span>
       </button>
     </header>
 
@@ -120,21 +121,23 @@ watch(activePlace, (p) => loadPosts(p))
 
     <div v-else class="flex-1 min-h-0">
       <!-- Header card -->
-      <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center bg-[#0b0b0b] border border-white/10 rounded-2xl p-4">
-        <img :src="company.avatar || '/img.jpg'" class="w-24 h-24 rounded-2xl object-cover" />
-        <div class="flex-1 min-w-0">
-          <p class="text-2xl font-bold text-white truncate">{{ company.name }}</p>
-          <p v-if="company.description" class="text-sm text-gray-300 mt-1">{{ company.description }}</p>
-          <div v-if="company.owner" class="text-xs text-gray-400 mt-2">
-            Владелец:
-            <UserLink :username="company.owner.username" :text="company.owner.name" class="text-gray-200 hover:underline" />
+      <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 items-start sm:items-center bg-[#0b0b0b] border border-white/10 rounded-2xl p-3 sm:p-4">
+        <div class="flex items-start gap-3 sm:gap-4 w-full sm:w-auto sm:flex-1 min-w-0">
+          <img :src="company.avatar || '/img.jpg'" class="w-16 h-16 sm:w-24 sm:h-24 rounded-2xl object-cover shrink-0" />
+          <div class="flex-1 min-w-0">
+            <p class="text-lg sm:text-2xl font-bold text-white truncate">{{ company.name }}</p>
+            <p v-if="company.description" class="text-xs sm:text-sm text-gray-300 mt-1">{{ company.description }}</p>
+            <div v-if="company.owner" class="text-xs text-gray-400 mt-2">
+              Владелец:
+              <UserLink :username="company.owner.username" :text="company.owner.name" class="text-gray-200 hover:underline" />
+            </div>
+            <div v-else class="text-xs text-amber-400 mt-2">Компания пока не привязана к пользователю</div>
           </div>
-          <div v-else class="text-xs text-amber-400 mt-2">Компания пока не привязана к пользователю</div>
         </div>
-        <div class="flex gap-2">
+        <div class="flex gap-2 w-full sm:w-auto">
           <button
             v-if="company.owner && !isOwner"
-            class="px-4 py-2 rounded-xl text-sm font-semibold bg-white text-black hover:bg-gray-200 transition flex items-center gap-2"
+            class="w-full sm:w-auto justify-center px-4 py-2 rounded-xl text-sm font-semibold bg-white text-black hover:bg-gray-200 transition flex items-center gap-2"
             @click="openChat"
           >
             <UIcon name="i-ion-chatbubbles" class="text-base" /> Связаться

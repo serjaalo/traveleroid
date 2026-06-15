@@ -113,15 +113,15 @@ onMounted(loadProfile)
 </script>
 
 <template>
-  <div class="h-full min-h-0 flex flex-col pb-280 lg:pb-0">
-    <header class="mb-6 flex items-center justify-between">
-      <h1 class="text-3xl font-bold text-white">Профиль</h1>
+  <div class="h-full min-h-0 flex flex-col pb-24 lg:pb-0">
+    <header class="mb-4 sm:mb-6 flex items-center justify-between gap-3">
+      <h1 class="text-2xl sm:text-3xl font-bold text-white">Профиль</h1>
       <button
-        class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm bg-[#0b0b0b] border border-white/10 text-white hover:bg-white/5 transition"
+        class="shrink-0 flex items-center gap-2 px-3 py-2 sm:px-4 rounded-xl text-sm bg-[#0b0b0b] border border-white/10 text-white hover:bg-white/5 transition"
         @click="showEdit = true"
       >
         <UIcon name="i-ion-pencil" class="text-base" />
-        <span>Редактировать</span>
+        <span class="hidden sm:inline">Редактировать</span>
       </button>
     </header>
     <div class="flex-1 min-h-0 flex flex-col">

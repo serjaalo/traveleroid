@@ -116,17 +116,17 @@ watch(user, loadMyCompany)
   </aside>
 
   <!-- Mobile Bottom Nav -->
-  <nav class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-black/50 backdrop-blur border-t border-gray-800 pb-4">
-    <div class="grid grid-cols-4 gap-2 px-2 pt-2">
+  <nav class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-black/70 backdrop-blur border-t border-gray-800 pb-[calc(env(safe-area-inset-bottom,0px)+0.5rem)]">
+    <div class="grid grid-cols-4 gap-1 px-1 pt-1">
       <NuxtLink
         v-for="link in navLinks"
         :key="link.to"
         :to="link.to"
-        class="flex flex-col items-center justify-center py-2 text-xs transition text-gray-400 hover:text-white"
+        class="flex flex-col items-center justify-center py-2 px-1 rounded-xl text-xs transition text-gray-400 hover:text-white"
         active-class="text-blue-400"
       >
-        <UIcon :name="link.icon" class="text-2xl mb-1" />
-        <span class="hidden xs:inline text-xs">{{ link.label }}</span>
+        <UIcon :name="link.icon" class="text-2xl mb-0.5" />
+        <span class="text-[10px] sm:text-xs truncate max-w-full">{{ link.label }}</span>
       </NuxtLink>
     </div>
   </nav>
@@ -135,13 +135,13 @@ watch(user, loadMyCompany)
   <Teleport to="body">
     <div
       v-if="showClaim"
-      class="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/70 backdrop-blur"
+      class="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:px-4 bg-black/70 backdrop-blur"
       @click.self="showClaim = false"
     >
-      <div class="w-full max-w-md bg-[#0b0b0b] border border-white/10 rounded-2xl p-6 shadow-2xl">
+      <div class="w-full max-w-md bg-[#0b0b0b] border border-white/10 rounded-t-2xl sm:rounded-2xl p-4 sm:p-6 shadow-2xl max-h-[95vh] overflow-y-auto">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold text-white">Привязать компанию</h3>
-          <button class="text-gray-400 hover:text-white" @click="showClaim = false">
+          <h3 class="text-base sm:text-lg font-semibold text-white">Привязать компанию</h3>
+          <button class="text-gray-400 hover:text-white p-1" @click="showClaim = false">
             <UIcon name="i-ion-close" class="text-xl" />
           </button>
         </div>

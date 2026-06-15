@@ -99,21 +99,21 @@ async function save() {
   <Teleport to="body">
     <div
       v-if="props.modelValue"
-      class="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/70 backdrop-blur"
+      class="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:px-4 bg-black/70 backdrop-blur overflow-y-auto"
       @click.self="close"
     >
-      <div class="w-full max-w-md bg-[#0b0b0b] border border-white/10 rounded-2xl p-6 shadow-2xl">
+      <div class="w-full max-w-md bg-[#0b0b0b] border border-white/10 rounded-t-2xl sm:rounded-2xl p-4 sm:p-6 shadow-2xl max-h-[95vh] overflow-y-auto">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold text-white">Редактировать профиль</h3>
-          <button class="text-gray-400 hover:text-white" @click="close">
+          <h3 class="text-base sm:text-lg font-semibold text-white">Редактировать профиль</h3>
+          <button class="text-gray-400 hover:text-white p-1" @click="close">
             <UIcon name="i-ion-close" class="text-xl" />
           </button>
         </div>
 
         <!-- Avatar -->
-        <div class="flex flex-col items-center mb-6">
+        <div class="flex flex-col items-center mb-5 sm:mb-6">
           <button type="button" class="relative group" @click="onPickFile">
-            <img :src="avatarPreview" class="w-28 h-28 rounded-full object-cover border border-white/10" />
+            <img :src="avatarPreview" class="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border border-white/10" />
             <div class="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
               <UIcon name="i-ion-camera" class="text-white text-2xl" />
             </div>

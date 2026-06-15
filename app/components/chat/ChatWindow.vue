@@ -82,10 +82,10 @@ function onSendImage(file: File, caption: string) {
     class="h-full min-h-0 overflow-hidden bg-[#0b0b0b] flex flex-col rounded-2xl border border-white/10"
   >
     <!-- Header -->
-    <div class="shrink-0 border-b border-white/6 px-4 py-3 flex items-center gap-4">
+    <div class="shrink-0 border-b border-white/6 px-3 sm:px-4 py-2.5 sm:py-3 flex items-center gap-3 sm:gap-4">
       <button
         v-if="props.mobile"
-        class="text-gray-400 hover:text-white shrink-0"
+        class="text-gray-400 hover:text-white shrink-0 -ml-1 p-1"
         @click="emit('back')"
       >
         <UIcon name="i-ion-arrow-back" class="w-6 h-6" />
@@ -97,10 +97,10 @@ function onSendImage(file: File, caption: string) {
       >
         <NuxtImg
           :src="props.chat.avatarUrl || '/img.jpg'"
-          class="w-12 h-12 rounded-full object-cover"
+          class="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0"
         />
         <div class="min-w-0">
-          <div class="font-semibold text-white truncate hover:underline">
+          <div class="font-semibold text-white truncate hover:underline text-sm sm:text-base">
             {{ props.chat.name }}
           </div>
           <div v-if="other?.username" class="text-xs text-gray-400 truncate">@{{ other.username }}</div>
@@ -109,7 +109,7 @@ function onSendImage(file: File, caption: string) {
     </div>
 
     <!-- Messages -->
-    <div ref="listRef" class="flex-1 min-h-0 overflow-y-auto p-4">
+    <div ref="listRef" class="flex-1 min-h-0 overflow-y-auto p-3 sm:p-4">
       <div v-if="!props.chat.messages.length" class="text-center text-gray-500 text-sm py-12">
         Напишите первое сообщение
       </div>
@@ -123,7 +123,7 @@ function onSendImage(file: File, caption: string) {
     </div>
 
     <!-- Composer -->
-    <div class="shrink-0 border-t border-white/6 p-4">
+    <div class="shrink-0 border-t border-white/6 p-2 sm:p-4">
       <ChatComposer @send="onSend" @send-image="onSendImage" />
     </div>
   </div>

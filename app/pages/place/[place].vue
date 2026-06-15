@@ -123,10 +123,10 @@ async function toggleLike(post: PostItem) {
   <div v-else class="space-y-8">
     <PlaceHeader :place="placeData?.place" :postsCount="postsCount" @back="goBack" />
 
-    <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+    <div class="flex flex-col md:flex-row md:items-start gap-4 md:gap-6">
       <PlaceStats :postsCount="postsCount" :avgRating="avgRating" :uniqueAuthors="uniqueAuthors" />
 
-      <div class="w-full md:w-full">
+      <div class="w-full md:flex-1 md:min-w-0">
         <ContactCard
           v-if="company"
           :title="company.name"
@@ -138,7 +138,7 @@ async function toggleLike(post: PostItem) {
       </div>
     </div>
 
-    <div class="space-y-2 pb-28 lg:pb-0">
+    <div class="space-y-2 pb-24 lg:pb-0">
       <div class="space-y-6">
         <h2 class="text-xl font-semibold text-white">Фотографии и отзывы</h2>
 

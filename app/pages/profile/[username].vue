@@ -131,11 +131,12 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="h-full min-h-0 flex flex-col pb-280 lg:pb-0">
-    <header class="mb-6 flex items-center justify-between">
-      <h1 class="text-3xl font-bold text-white">@{{ profile.username || username }}</h1>
-      <button @click="router.back()" class="text-sm text-gray-300 hover:text-white flex items-center gap-2">
-        <UIcon name="i-ion-arrow-back" class="size-4" /> Назад
+  <div class="h-full min-h-0 flex flex-col pb-24 lg:pb-0">
+    <header class="mb-4 sm:mb-6 flex items-center justify-between gap-3">
+      <h1 class="text-2xl sm:text-3xl font-bold text-white truncate">@{{ profile.username || username }}</h1>
+      <button @click="router.back()" class="shrink-0 text-sm text-gray-300 hover:text-white flex items-center gap-2">
+        <UIcon name="i-ion-arrow-back" class="size-4" />
+        <span class="hidden sm:inline">Назад</span>
       </button>
     </header>
 
@@ -151,11 +152,11 @@ onMounted(async () => {
         <ProfileHeader :profile="profile" hide-username-inline />
       </div>
 
-      <div v-if="!isMe" class="mt-4 flex gap-2">
+      <div v-if="!isMe" class="mt-4 flex flex-wrap gap-2">
         <button
           @click="toggleFollow"
           :disabled="followBusy"
-          class="px-4 py-2 rounded-xl text-sm font-semibold transition"
+          class="flex-1 sm:flex-none min-w-0 px-4 py-2 rounded-xl text-sm font-semibold transition"
           :class="isFollowing
             ? 'bg-white/10 text-white hover:bg-white/20'
             : 'bg-white text-black hover:bg-gray-200'"
@@ -164,7 +165,7 @@ onMounted(async () => {
         </button>
         <button
           @click="openChat"
-          class="px-4 py-2 rounded-xl text-sm font-semibold bg-[#0b0b0b] border border-white/10 text-white hover:bg-white/5 transition flex items-center gap-2"
+          class="flex-1 sm:flex-none min-w-0 px-4 py-2 rounded-xl text-sm font-semibold bg-[#0b0b0b] border border-white/10 text-white hover:bg-white/5 transition flex items-center justify-center gap-2"
         >
           <UIcon name="i-ion-chatbubbles" class="text-base" /> Написать
         </button>

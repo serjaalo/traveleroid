@@ -166,9 +166,9 @@ watch(
 </script>
 
 <template>
-  <div class="h-full min-h-0 flex flex-col pb-18">
-    <header class="mb-6">
-      <h1 class="text-3xl font-bold text-white">Чат</h1>
+  <div class="h-full min-h-0 flex flex-col pb-24 lg:pb-0">
+    <header class="mb-4 sm:mb-6" :class="{ 'hidden md:block': selectedId }">
+      <h1 class="text-2xl sm:text-3xl font-bold text-white">Чат</h1>
     </header>
 
     <div class="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-[320px_1fr] gap-4">

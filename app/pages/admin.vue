@@ -223,21 +223,21 @@ onMounted(checkSession)
     </div>
 
     <!-- Admin panel -->
-    <div v-else class="max-w-5xl mx-auto p-6">
-      <header class="flex items-center justify-between mb-8">
-        <div>
-          <h1 class="text-3xl font-bold">Админ-панель</h1>
-          <p class="text-sm text-gray-400 mt-1">Управление компаниями и ключами</p>
+    <div v-else class="max-w-5xl mx-auto p-4 sm:p-6">
+      <header class="flex items-start sm:items-center justify-between gap-3 mb-6 sm:mb-8">
+        <div class="min-w-0">
+          <h1 class="text-2xl sm:text-3xl font-bold">Админ-панель</h1>
+          <p class="text-xs sm:text-sm text-gray-400 mt-1">Управление компаниями и ключами</p>
         </div>
-        <div class="flex items-center gap-2">
-          <NuxtLink to="/" class="px-3 py-2 rounded-xl text-sm bg-[#0b0b0b] border border-white/10 hover:bg-white/5">На сайт</NuxtLink>
-          <button @click="logout" class="px-3 py-2 rounded-xl text-sm bg-[#0b0b0b] border border-white/10 hover:bg-white/5">Выйти</button>
+        <div class="flex items-center gap-2 shrink-0">
+          <NuxtLink to="/" class="px-3 py-2 rounded-xl text-xs sm:text-sm bg-[#0b0b0b] border border-white/10 hover:bg-white/5 whitespace-nowrap">На сайт</NuxtLink>
+          <button @click="logout" class="px-3 py-2 rounded-xl text-xs sm:text-sm bg-[#0b0b0b] border border-white/10 hover:bg-white/5 whitespace-nowrap">Выйти</button>
         </div>
       </header>
 
       <!-- Create company -->
-      <section class="bg-[#0b0b0b] border border-white/10 rounded-2xl p-6 mb-8">
-        <h2 class="text-lg font-semibold mb-4">Создать компанию</h2>
+      <section class="bg-[#0b0b0b] border border-white/10 rounded-2xl p-4 sm:p-6 mb-6 sm:mb-8">
+        <h2 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Создать компанию</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <input v-model="form.name" placeholder="Название*" class="bg-black/40 border border-white/10 rounded-xl py-2 px-3 text-sm" />
           <input v-model="form.avatar" placeholder="URL аватара (опционально)" class="bg-black/40 border border-white/10 rounded-xl py-2 px-3 text-sm" />
@@ -275,28 +275,30 @@ onMounted(checkSession)
           <div
             v-for="c in companies"
             :key="c.id"
-            class="bg-[#0b0b0b] border border-white/10 rounded-2xl p-4"
+            class="bg-[#0b0b0b] border border-white/10 rounded-2xl p-3 sm:p-4"
           >
-            <div class="flex items-center gap-4">
-              <img :src="c.avatar || '/img.jpg'" class="w-12 h-12 rounded-2xl object-cover" />
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2 flex-wrap">
-                  <p class="font-semibold truncate">{{ c.name }}</p>
-                  <span v-if="c.ownerId" class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300">привязана</span>
-                  <span v-else class="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300">свободна</span>
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+              <div class="flex items-center gap-3 sm:gap-4 w-full sm:w-auto sm:flex-1 min-w-0">
+                <img :src="c.avatar || '/img.jpg'" class="w-12 h-12 rounded-2xl object-cover shrink-0" />
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <p class="font-semibold truncate">{{ c.name }}</p>
+                    <span v-if="c.ownerId" class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300">привязана</span>
+                    <span v-else class="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300">свободна</span>
+                  </div>
+                  <p v-if="c.description" class="text-xs text-gray-500 truncate">{{ c.description }}</p>
                 </div>
-                <p v-if="c.description" class="text-xs text-gray-500 truncate">{{ c.description }}</p>
               </div>
-              <div class="flex gap-2">
+              <div class="flex gap-2 w-full sm:w-auto">
                 <button
                   @click="toggleKeys(c.id)"
-                  class="px-3 py-2 rounded-xl text-xs bg-white/10 hover:bg-white/20 transition"
+                  class="flex-1 sm:flex-none px-3 py-2 rounded-xl text-xs bg-white/10 hover:bg-white/20 transition"
                 >
                   {{ expandedId === c.id ? 'Скрыть' : 'Управление' }}
                 </button>
                 <button
                   @click="deleteCompany(c.id)"
-                  class="px-3 py-2 rounded-xl text-xs bg-red-500/20 text-red-300 hover:bg-red-500/30 transition"
+                  class="flex-1 sm:flex-none px-3 py-2 rounded-xl text-xs bg-red-500/20 text-red-300 hover:bg-red-500/30 transition"
                 >Удалить</button>
               </div>
             </div>
@@ -341,9 +343,9 @@ onMounted(checkSession)
                   <div
                     v-for="k in keysMap[c.id]"
                     :key="k.key"
-                    class="flex items-center gap-3 px-3 py-2 rounded-xl bg-black/40 border border-white/5"
+                    class="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 rounded-xl bg-black/40 border border-white/5"
                   >
-                    <code class="text-amber-300 text-sm flex-1 truncate">{{ k.key }}</code>
+                    <code class="text-amber-300 text-xs sm:text-sm flex-1 min-w-0 break-all">{{ k.key }}</code>
                     <span v-if="k.used" class="text-xs text-gray-500">использован</span>
                     <span v-else class="text-xs text-emerald-300">активен</span>
                     <button type="button" class="text-xs text-gray-300 hover:text-white" @click="copyKey(k.key)">Копировать</button>

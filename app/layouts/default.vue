@@ -11,7 +11,7 @@ const { loggedIn } = useUserSession()
   <AppSidebar v-if="loggedIn" />
   <Cursor />
   <main>
-    <UContainer class="h-screen pt-6 lg:pt-18 px-2">
+    <UContainer class="h-screen pt-4 sm:pt-6 lg:pt-18 px-3 sm:px-4 lg:px-2">
       <slot />
     </UContainer>
   </main>

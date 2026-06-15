@@ -43,7 +43,7 @@ const time = computed(() => {
       />
     </NuxtLink>
 
-    <div :class="['max-w-[70%] break-words', props.isOwn ? 'text-black bg-white rounded-2xl p-3' : 'text-white bg-white/5 rounded-2xl p-3']">
+    <div :class="['max-w-[85%] sm:max-w-[70%] break-words', props.isOwn ? 'text-black bg-white rounded-2xl p-2.5 sm:p-3' : 'text-white bg-white/5 rounded-2xl p-2.5 sm:p-3']">
       <UserLink
         v-if="!props.isOwn && props.author"
         :username="props.author.username"

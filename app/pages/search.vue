@@ -50,19 +50,19 @@ const hasResults = computed(() =>
 </script>
 
 <template>
-  <div class="h-full flex flex-col pb-28 lg:pb-0">
-    <header class="mb-6">
-      <h1 class="text-3xl font-bold text-white">Поиск</h1>
-      <p class="mt-1 text-sm text-gray-400">Места, посты и путешественники</p>
+  <div class="h-full flex flex-col pb-24 lg:pb-0">
+    <header class="mb-4 sm:mb-6">
+      <h1 class="text-2xl sm:text-3xl font-bold text-white">Поиск</h1>
+      <p class="mt-1 text-xs sm:text-sm text-gray-400">Места, посты и путешественники</p>
     </header>
 
-    <div class="relative mb-6">
+    <div class="relative mb-4 sm:mb-6">
       <UIcon name="i-ion-search" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg" />
       <input
         v-model="q"
         type="text"
         placeholder="Поиск..."
-        class="w-full bg-[#0b0b0b] border border-white/10 rounded-xl py-3.5 pl-11 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition"
+        class="w-full bg-[#0b0b0b] border border-white/10 rounded-xl py-3 sm:py-3.5 pl-11 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition text-sm sm:text-base"
       />
     </div>
 

@@ -49,23 +49,24 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <div class="h-full flex flex-col pb-280 lg:pb-0">
-    <header class="mb-6 flex items-center justify-between">
-      <div>
-        <h1 class="text-3xl font-bold text-white">Новый пост</h1>
-        <p class="mt-1 text-sm text-gray-400">Поделитесь впечатлениями о путешествии</p>
+  <div class="h-full flex flex-col pb-24 lg:pb-0">
+    <header class="mb-4 sm:mb-6 flex items-center justify-between gap-3">
+      <div class="min-w-0">
+        <h1 class="text-2xl sm:text-3xl font-bold text-white">Новый пост</h1>
+        <p class="mt-1 text-xs sm:text-sm text-gray-400">Поделитесь впечатлениями о путешествии</p>
       </div>
 
       <NuxtLink
         to="/"
-        class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm text-gray-400 hover:text-white hover:bg-white/5 transition"
+        aria-label="Закрыть"
+        class="shrink-0 flex items-center justify-center w-10 h-10 sm:w-auto sm:h-auto sm:px-4 sm:py-2 rounded-xl text-sm text-gray-400 hover:text-white hover:bg-white/5 transition"
       >
         <UIcon name="i-ion-close" class="text-xl" />
       </NuxtLink>
     </header>
 
     <div class="flex-1 min-h-0 overflow-y-auto">
-      <div class="max-w-2xl mx-auto space-y-6">
+      <div class="max-w-2xl mx-auto space-y-4 sm:space-y-6">
         <PostPhotoUploader v-model="photo" />
 
         <PostLocationPicker v-model="location" />

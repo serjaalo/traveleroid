@@ -83,7 +83,7 @@ function onKeydown(e: KeyboardEvent) {
 <template>
   <div class="bg-black/80 rounded-2xl border border-white/10 p-2 flex flex-col gap-2">
     <div v-if="pendingPreview" class="relative inline-block w-fit">
-      <img :src="pendingPreview" class="max-h-32 rounded-xl border border-white/10" />
+      <img :src="pendingPreview" class="max-h-28 sm:max-h-32 rounded-xl border border-white/10" />
       <button
         type="button"
         class="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-black border border-white/20 flex items-center justify-center text-white"
@@ -93,7 +93,7 @@ function onKeydown(e: KeyboardEvent) {
       </button>
     </div>
 
-    <div class="flex items-end gap-2">
+    <div class="flex items-end gap-1 sm:gap-2">
       <input ref="fileInput" type="file" accept="image/*" class="hidden" @change="onFileChange" />
       <button
         type="button"
@@ -108,16 +108,20 @@ function onKeydown(e: KeyboardEvent) {
         v-model="text"
         rows="1"
         :placeholder="pendingImage ? 'Подпись (необязательно)' : 'Напишите сообщение...'"
-        class="flex-1 bg-transparent resize-none outline-none min-h-0 placeholder:text-gray-400 text-white p-2"
+        class="flex-1 min-w-0 bg-transparent resize-none outline-none min-h-0 placeholder:text-gray-400 text-white text-sm sm:text-base p-2"
         @keydown="onKeydown"
       />
 
       <div class="flex items-end shrink-0">
         <button
           type="button"
-          class="bg-white text-black rounded-full px-4 py-2"
+          aria-label="Отправить"
+          class="bg-white text-black rounded-full p-2 sm:px-4 sm:py-2 flex items-center justify-center"
           @click="submit"
-        >Отправить</button>
+        >
+          <UIcon name="i-ion-paper-plane" class="text-base sm:hidden" />
+          <span class="hidden sm:inline">Отправить</span>
+        </button>
       </div>
     </div>
   </div>

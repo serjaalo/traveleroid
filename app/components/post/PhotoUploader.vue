@@ -30,8 +30,8 @@ function onFileChange(event: Event) {
         @change="onFileChange"
       />
 
-      <div v-if="!previewUrl" class="flex flex-col items-center justify-center py-12 text-gray-400">
-        <UIcon name="i-ion-camera" class="text-4xl mb-3" />
+      <div v-if="!previewUrl" class="flex flex-col items-center justify-center py-8 sm:py-12 text-gray-400 text-center px-3">
+        <UIcon name="i-ion-camera" class="text-3xl sm:text-4xl mb-2 sm:mb-3" />
         <span class="text-sm">Нажмите, чтобы загрузить фото</span>
         <span class="text-xs text-gray-500 mt-1">JPEG, PNG, WebP</span>
       </div>
@@ -39,7 +39,7 @@ function onFileChange(event: Event) {
       <img
         v-else
         :src="previewUrl"
-        class="w-full max-h-96 object-contain rounded-xl"
+        class="w-full max-h-72 sm:max-h-96 object-contain rounded-xl"
         alt="Preview"
       />
     </div>
