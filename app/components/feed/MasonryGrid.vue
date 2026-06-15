@@ -14,8 +14,8 @@ const { data: items, pending } = await useFetch<Photo[]>('/api/posts')
 const scrollArea = useTemplateRef('scrollArea')
 const { width } = useElementSize(() => scrollArea.value?.$el)
 
-const lanes = computed(() => width.value < 600 ? 2 : 4)
-const gap = computed(() => width.value < 600 ? 8 : 16)
+const lanes = computed(() => width.value < 600 ? 2 : 3)
+const gap = computed(() => width.value < 600 ? 6 : 16)
 
 const skeletonAspects = ['3/4', '4/3', '1/1', '4/5', '5/4', '3/4', '2/3', '4/3', '1/1', '3/2']
 </script>
@@ -51,7 +51,7 @@ const skeletonAspects = ['3/4', '4/3', '1/1', '4/5', '5/4', '3/4', '2/3', '4/3',
       lanes,
       estimateSize: 480
     }"
-    class="w-full h-full"
+    class="w-full h-full pb-24"
   >
     <FeedPhotoCard :photo="item as Photo" />
   </UScrollArea>

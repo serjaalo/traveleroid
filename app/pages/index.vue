@@ -3,7 +3,7 @@ import MasonryGrid from '~/components/feed/MasonryGrid.vue'
 </script>
 
 <template>
-  <div class="h-full flex flex-col pb-24 lg:pb-0">
+  <div class="h-full flex flex-col">
     <header class="mb-4 sm:mb-6 flex items-center justify-between gap-3">
       <div class="min-w-0">
         <h1 class="text-2xl sm:text-3xl font-bold text-white">Лента</h1>
