@@ -21,6 +21,13 @@ interface CompanyKey {
   usedAt: string | null
   createdAt: string
 }
+interface AdminPlace {
+  place: string
+  postsCount: number
+  reviewsCount: number
+  company: { id: string; name: string } | null
+  registered: boolean
+}
 
 const loggedIn = ref(false)
 const password = ref('')
@@ -38,11 +45,21 @@ const form = ref({ name: '', description: '', places: '', avatar: '' })
 const createBusy = ref(false)
 const createError = ref('')
 
+// Places block
+const places = ref<AdminPlace[]>([])
+const loadingPlaces = ref(false)
+const newPlace = ref('')
+const createPlaceBusy = ref(false)
+const placesError = ref('')
+
 async function checkSession() {
   try {
     const r = await $fetch<{ admin: boolean }>('/api/admin/session')
     loggedIn.value = r.admin
-    if (r.admin) await loadCompanies()
+    if (r.admin) {
+      await loadCompanies()
+      await loadPlaces()
+    }
   } catch {
     loggedIn.value = false
   }
@@ -56,6 +73,7 @@ async function login() {
     loggedIn.value = true
     password.value = ''
     await loadCompanies()
+    await loadPlaces()
   } catch (e: unknown) {
     const err = e as { data?: { statusMessage?: string }; statusMessage?: string }
     loginError.value = err?.data?.statusMessage || err?.statusMessage || 'Ошибка входа'
@@ -79,6 +97,53 @@ async function loadCompanies() {
     console.error(e)
   } finally {
     loadingCompanies.value = false
+  }
+}
+
+async function loadPlaces() {
+  loadingPlaces.value = true
+  try {
+    places.value = await $fetch<AdminPlace[]>('/api/admin/places')
+  } catch (e) {
+    console.error(e)
+  } finally {
+    loadingPlaces.value = false
+  }
+}
+
+async function createPlace() {
+  if (createPlaceBusy.value) return
+  placesError.value = ''
+  const value = newPlace.value.trim()
+  if (!value) {
+    placesError.value = 'Введите название места'
+    return
+  }
+  createPlaceBusy.value = true
+  try {
+    await $fetch('/api/admin/places', {
+      method: 'POST',
+      body: { place: value }
+    })
+    newPlace.value = ''
+    await loadPlaces()
+  } catch (e: unknown) {
+    const err = e as { data?: { statusMessage?: string }; statusMessage?: string }
+    placesError.value = err?.data?.statusMessage || err?.statusMessage || 'Ошибка создания'
+  } finally {
+    createPlaceBusy.value = false
+  }
+}
+
+async function deletePlace(place: string) {
+  if (!confirm(`Удалить место "${place}"? Будут удалены связанные посты и отзывы, место также будет откреплено от компании.`)) return
+  try {
+    await $fetch(`/api/admin/places/${encodeURIComponent(place)}`, { method: 'DELETE' })
+    await loadPlaces()
+    await loadCompanies()
+  } catch (e: unknown) {
+    const err = e as { data?: { statusMessage?: string }; statusMessage?: string }
+    alert(err?.data?.statusMessage || err?.statusMessage || 'Ошибка удаления')
   }
 }
 
@@ -254,6 +319,69 @@ onMounted(checkSession)
             {{ createBusy ? 'Создание...' : 'Создать' }}
           </button>
         </div>
+      </section>
+
+      <!-- Places block -->
+      <section class="bg-[#0b0b0b] border border-white/10 rounded-2xl p-4 sm:p-6 mb-6 sm:mb-8">
+        <div class="flex items-start sm:items-center justify-between gap-3 mb-3 sm:mb-4 flex-col sm:flex-row">
+          <div>
+            <h2 class="text-base sm:text-lg font-semibold">Места</h2>
+            <p class="text-xs text-gray-500 mt-1">Список всех известных мест: добавление и удаление</p>
+          </div>
+          <button
+            @click="loadPlaces"
+            class="px-3 py-2 rounded-xl text-xs bg-white/5 hover:bg-white/10 border border-white/10 transition"
+          >Обновить</button>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-2 mb-4">
+          <input
+            v-model="newPlace"
+            placeholder="Например: Озеро Лабынкыр"
+            class="flex-1 bg-black/40 border border-white/10 rounded-xl py-2 px-3 text-sm"
+            @keyup.enter="createPlace"
+          />
+          <button
+            @click="createPlace"
+            :disabled="createPlaceBusy"
+            class="px-4 py-2 rounded-xl bg-white text-black text-sm font-semibold hover:bg-gray-200 transition disabled:opacity-50"
+          >
+            {{ createPlaceBusy ? 'Создание...' : '+ Добавить место' }}
+          </button>
+        </div>
+        <p v-if="placesError" class="text-sm text-red-400 mb-3">{{ placesError }}</p>
+
+        <div v-if="loadingPlaces" class="space-y-2">
+          <div v-for="i in 3" :key="i" class="flex items-center gap-3 p-3 rounded-xl bg-black/30">
+            <Skeleton width="40%" height="1rem" />
+            <Skeleton width="20%" height="0.875rem" />
+          </div>
+        </div>
+        <div v-else-if="!places.length" class="text-sm text-gray-400 py-4 text-center bg-black/30 rounded-xl">
+          Мест пока нет
+        </div>
+        <TransitionGroup v-else name="fade" tag="div" class="space-y-2">
+          <div
+            v-for="p in places"
+            :key="p.place"
+            class="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 rounded-xl bg-black/40 border border-white/5"
+          >
+            <NuxtLink
+              :to="`/place/${encodeURIComponent(p.place)}`"
+              target="_blank"
+              class="text-sm text-white hover:underline flex-1 min-w-0 truncate"
+            >{{ p.place }}</NuxtLink>
+            <span class="text-xs text-gray-400 whitespace-nowrap">{{ p.postsCount }} постов · {{ p.reviewsCount }} отзывов</span>
+            <span v-if="p.company" class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 whitespace-nowrap">
+              {{ p.company.name }}
+            </span>
+            <span v-else class="text-xs px-2 py-0.5 rounded-full bg-white/5 text-gray-400 whitespace-nowrap">без компании</span>
+            <button
+              @click="deletePlace(p.place)"
+              class="text-xs text-red-300 hover:text-red-200 transition active:scale-95 whitespace-nowrap"
+            >Удалить</button>
+          </div>
+        </TransitionGroup>
       </section>
 
       <!-- Companies list -->

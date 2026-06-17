@@ -135,6 +135,7 @@ async function toggleLike(post: PostItem) {
       <div class="w-full md:flex-1 md:min-w-0">
         <ContactCard
           v-if="company"
+          :company-id="company.id"
           :title="company.name"
           :description="company.description"
           :avatar="company.avatar"
