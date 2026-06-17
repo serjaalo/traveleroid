@@ -41,7 +41,7 @@ const expandedId = ref<string | null>(null)
 const placeInputs = ref<Record<string, string>>({})
 
 // Create form
-const form = ref({ name: '', description: '', places: '', avatar: '' })
+const form = ref({ name: '', description: '', avatar: '' })
 const createBusy = ref(false)
 const createError = ref('')
 
@@ -51,6 +51,10 @@ const loadingPlaces = ref(false)
 const newPlace = ref('')
 const createPlaceBusy = ref(false)
 const placesError = ref('')
+const placesExpanded = ref(true)
+
+// Free (unattached) places — used for selector when adding to a company
+const freePlaces = ref<string[]>([])
 
 async function checkSession() {
   try {
@@ -109,6 +113,15 @@ async function loadPlaces() {
   } finally {
     loadingPlaces.value = false
   }
+  await loadFreePlaces()
+}
+
+async function loadFreePlaces() {
+  try {
+    freePlaces.value = await $fetch<string[]>('/api/admin/places/free')
+  } catch (e) {
+    console.error(e)
+  }
 }
 
 async function createPlace() {
@@ -164,20 +177,16 @@ async function createCompany() {
   }
   createBusy.value = true
   try {
-    const places = form.value.places
-      .split(',')
-      .map(s => s.trim())
-      .filter(Boolean)
     await $fetch('/api/admin/companies', {
       method: 'POST',
       body: {
         name: form.value.name.trim(),
         description: form.value.description.trim(),
-        places,
+        places: [],
         avatar: form.value.avatar.trim() || undefined
       }
     })
-    form.value = { name: '', description: '', places: '', avatar: '' }
+    form.value = { name: '', description: '', avatar: '' }
     await loadCompanies()
   } catch (e: unknown) {
     const err = e as { data?: { statusMessage?: string }; statusMessage?: string }
@@ -207,6 +216,7 @@ async function addPlace(companyId: string) {
     })
     placeInputs.value[companyId] = ''
     await loadCompanies()
+    await loadPlaces()
   } catch (e: unknown) {
     const err = e as { data?: { statusMessage?: string }; statusMessage?: string }
     alert(err?.data?.statusMessage || err?.statusMessage || 'Ошибка добавления')
@@ -218,6 +228,7 @@ async function removePlace(companyId: string, place: string) {
   try {
     await $fetch(`/api/admin/companies/${companyId}/places/${encodeURIComponent(place)}`, { method: 'DELETE' })
     await loadCompanies()
+    await loadPlaces()
   } catch (e) {
     console.error(e)
   }
@@ -307,8 +318,8 @@ onMounted(checkSession)
           <input v-model="form.name" placeholder="Название*" class="bg-black/40 border border-white/10 rounded-xl py-2 px-3 text-sm" />
           <input v-model="form.avatar" placeholder="URL аватара (опционально)" class="bg-black/40 border border-white/10 rounded-xl py-2 px-3 text-sm" />
           <input v-model="form.description" placeholder="Описание" class="bg-black/40 border border-white/10 rounded-xl py-2 px-3 text-sm md:col-span-2" />
-          <input v-model="form.places" placeholder="Места через запятую (опционально)" class="bg-black/40 border border-white/10 rounded-xl py-2 px-3 text-sm md:col-span-2" />
         </div>
+        <p class="text-xs text-gray-500 mt-3">Места можно прикрепить позже — выбрав из существующих в разделе «Управление» компании.</p>
         <p v-if="createError" class="text-sm text-red-400 mt-2">{{ createError }}</p>
         <div class="mt-4">
           <button
@@ -324,16 +335,30 @@ onMounted(checkSession)
       <!-- Places block -->
       <section class="bg-[#0b0b0b] border border-white/10 rounded-2xl p-4 sm:p-6 mb-6 sm:mb-8">
         <div class="flex items-start sm:items-center justify-between gap-3 mb-3 sm:mb-4 flex-col sm:flex-row">
-          <div>
-            <h2 class="text-base sm:text-lg font-semibold">Места</h2>
-            <p class="text-xs text-gray-500 mt-1">Список всех известных мест: добавление и удаление</p>
-          </div>
           <button
-            @click="loadPlaces"
+            type="button"
+            class="flex items-center gap-2 group cursor-pointer transition active:scale-[0.98] text-left"
+            @click="placesExpanded = !placesExpanded"
+          >
+            <UIcon
+              name="i-ion-chevron-forward"
+              class="size-4 text-gray-400 transition-transform duration-200"
+              :class="placesExpanded ? 'rotate-90' : ''"
+            />
+            <div>
+              <h2 class="text-base sm:text-lg font-semibold">Места <span class="text-xs text-gray-500 font-normal">({{ places.length }})</span></h2>
+              <p class="text-xs text-gray-500 mt-1">Список всех известных мест: добавление и удаление</p>
+            </div>
+          </button>
+          <button
+            v-if="placesExpanded"
+            @click.stop="loadPlaces"
             class="px-3 py-2 rounded-xl text-xs bg-white/5 hover:bg-white/10 border border-white/10 transition"
           >Обновить</button>
         </div>
 
+        <Transition name="slide-up">
+        <div v-if="placesExpanded">
         <div class="flex flex-col sm:flex-row gap-2 mb-4">
           <input
             v-model="newPlace"
@@ -382,6 +407,8 @@ onMounted(checkSession)
             >Удалить</button>
           </div>
         </TransitionGroup>
+        </div>
+        </Transition>
       </section>
 
       <!-- Companies list -->
@@ -448,14 +475,22 @@ onMounted(checkSession)
                   </span>
                 </TransitionGroup>
                 <div class="flex gap-2">
-                  <input
+                  <select
                     v-model="placeInputs[c.id]"
-                    placeholder="Новое место"
-                    class="flex-1 bg-black/40 border border-white/10 rounded-xl py-2 px-3 text-sm"
-                    @keyup.enter="addPlace(c.id)"
-                  />
-                  <button @click="addPlace(c.id)" class="px-3 py-2 rounded-xl text-xs bg-white text-black font-semibold">+ Добавить</button>
+                    class="flex-1 bg-black/40 border border-white/10 rounded-xl py-2 px-3 text-sm text-white focus:outline-none focus:border-white/30"
+                  >
+                    <option value="" disabled>{{ freePlaces.length ? 'Выберите место...' : 'Свободных мест нет' }}</option>
+                    <option v-for="fp in freePlaces" :key="fp" :value="fp" class="bg-[#0b0b0b]">{{ fp }}</option>
+                  </select>
+                  <button
+                    @click="addPlace(c.id)"
+                    :disabled="!placeInputs[c.id]"
+                    class="px-3 py-2 rounded-xl text-xs bg-white text-black font-semibold disabled:opacity-50 transition"
+                  >+ Добавить</button>
                 </div>
+                <p v-if="!freePlaces.length" class="text-xs text-gray-500 mt-2">
+                  Все места уже привязаны к компаниям. Создайте новое место в разделе «Места» выше.
+                </p>
               </div>
 
               <!-- Keys -->

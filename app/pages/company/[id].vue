@@ -4,6 +4,7 @@ import UserLink from '~/components/common/UserLink.vue'
 import StarsDisplay from '~/components/common/StarsDisplay.vue'
 import CompanySkeleton from '~/components/common/CompanySkeleton.vue'
 import ProfilePostsSkeleton from '~/components/profile/ProfilePostsSkeleton.vue'
+import EditCompanyModal from '~/components/company/EditCompanyModal.vue'
 
 interface CompanyDto {
   id: string
@@ -44,6 +45,15 @@ const loadingPosts = ref(false)
 const direction = ref<'slide-left' | 'slide-right'>('slide-right')
 
 const isOwner = computed(() => company.value?.owner?.id === user.value?.id)
+
+const editOpen = ref(false)
+
+function onCompanyUpdated(updates: Partial<{ name: string; description: string; avatar: string }>) {
+  if (!company.value) return
+  if (updates.name !== undefined) company.value.name = updates.name
+  if (updates.description !== undefined) company.value.description = updates.description
+  if (updates.avatar !== undefined) company.value.avatar = updates.avatar
+}
 
 async function loadCompany() {
   try {
@@ -148,8 +158,27 @@ watch(activePlace, (p) => loadPosts(p))
           >
             <UIcon name="i-ion-chatbubbles" class="text-base" /> Связаться
           </button>
+          <button
+            v-if="isOwner"
+            class="w-full sm:w-auto justify-center px-4 py-2 rounded-xl text-sm font-semibold bg-white text-black hover:bg-gray-200 transition flex items-center gap-2 active:scale-95"
+            @click="editOpen = true"
+          >
+            <UIcon name="i-ion-create-outline" class="text-base" /> Редактировать
+          </button>
         </div>
       </div>
+
+      <EditCompanyModal
+        v-if="isOwner && company"
+        v-model="editOpen"
+        :company="{
+          id: company.id,
+          name: company.name,
+          description: company.description,
+          avatar: company.avatar
+        }"
+        @updated="onCompanyUpdated"
+      />
 
       <!-- Tabs / places -->
       <div class="mt-6">
